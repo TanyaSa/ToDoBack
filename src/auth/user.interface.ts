@@ -1,5 +1,5 @@
-export interface UserDTO {
+export interface UserInterface {
     email: string;
-    password: string;
+    passwordHash: String; 
     fullName: string;
 }

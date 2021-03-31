@@ -1,31 +1,34 @@
-import { Body, Controller, Post } from "@nestjs/common";
-import { CreateUserDto } from './user.dto';
+import { Body, Controller, Post, HttpCode } from "@nestjs/common";
+import { CreateUserDto } from './create.user.dto';
 import { User } from './user.schema';
-import { UserDTO } from './user.interface';
+import { UserInterface } from './user.interface';
 import { AuthService } from './auth.service';
+import { SigninUserDto } from './signin.user.dto';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
-    @Post('/auth/sign-up')
+    @Post('sign-up')
     sighUp(@Body() createUserDto: CreateUserDto): Promise<User> {
         const user = {
             email: createUserDto.email,
-            password: createUserDto.password,
+            passwordHash: createUserDto.password,
             fullName: createUserDto.fullName
-        } as UserDTO;
+        } as UserInterface;
+
         return this.authService.sighUp(user);
     }
 
-    @Post('/auth/sign-in')
-    sighIn(@Body() createUserDto: CreateUserDto): Promise<User> {
-        const user = {
-            email: createUserDto.email,
-            password: createUserDto.password,
-            fullName: createUserDto.fullName
-        } as UserDTO;
-        return this.authService.sighUp(user);
+    @Post('sign-in')
+    @HttpCode(200)
+    sighIn(@Body() signinUserDto: SigninUserDto): Promise<string> {
+        
+        const userLogin = {
+            email: signinUserDto.email,
+            password: signinUserDto.password
+           };
+        return this.authService.signIn(userLogin);
     }
 
 }
