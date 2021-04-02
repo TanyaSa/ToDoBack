@@ -5,7 +5,7 @@ import { Model } from "mongoose";
 import { UserInterface } from "./user.interface";
 import { User, UserDocument, UserWithoutPassword } from './user.schema';
 import * as bcrypt from "bcrypt";
-import { plainToClass } from "class-transformer";
+import { classToPlain, plainToClass } from "class-transformer";
 import { SigninUserDto } from './signin.user.dto';
 
 @Injectable()
@@ -54,18 +54,14 @@ export class AuthService {
             return 'Invalid username or password.';
         }
 
-        return new Promise((resolve, reject) => {
-            bcrypt.compare(signinUserDto.password, userFound.passwordHash, (err, res) => {
-                if (err) {
-                    reject(err)
-                } if (res) {
-                    const token = this.jwtService.sign(userFound.toObject());
-                    resolve(token);
-                } else {
-                    reject('Invalid username or password.');
-                }
-            });
-        });
+        const res = await bcrypt.compare(signinUserDto.password, userFound.passwordHash);
+        if (res) {
+            const userWithoutPassword = plainToClass(UserWithoutPassword, userFound.toObject());
+            const plain = classToPlain(userWithoutPassword);
+            return this.jwtService.sign(plain);
+        } else {
+            return 'Invalid username or password.';
+        }
 
     }
 }

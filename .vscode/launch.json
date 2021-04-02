@@ -19,6 +19,13 @@
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",
             "protocol": "inspector"
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach Nest",
+            "port": 3000,
+            "address": "localhost",
         }
     ]
 }
