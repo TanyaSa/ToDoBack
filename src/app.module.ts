@@ -4,8 +4,7 @@ import { AppController } from './app.controller';
 import { ItemsModule } from './items/item.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthTokenMiddleware } from './auth/authToken.middleware';
-import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from './auth/auth.guard';
+
 
 @Module({
   imports: [

@@ -7,4 +7,7 @@ export class SigninUserDto {
 
     @IsNotEmpty()
     password: string;
+
+    // @IsNotEmpty()
+    // role: string;
 }

@@ -8,9 +8,10 @@ import { User, UserSchema } from './user.schema';
 
 @Module({
     imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    JwtModule.register({ secret: 'hard!to-guess_secret' })],
+    JwtModule.register( { secret: 'hard!to-guess_secrethard!to-guess_secrethard!to-guess_secrethard!to-guess_secret'} )],
+    //generae new secret for Ref token
     controllers: [AuthController],
     providers: [AuthService],
-    exports: [JwtModule]
+    exports: [JwtModule, AuthService, MongooseModule]
 })
 export class AuthModule { }

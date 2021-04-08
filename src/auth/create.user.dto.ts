@@ -1,4 +1,5 @@
 import { Contains, MinLength } from "class-validator";
+import { Role } from "./role.enum";
 
 export class CreateUserDto {
     @MinLength(5, {
@@ -18,6 +19,11 @@ export class CreateUserDto {
         message: 'Full name should contain more than 3 symbols.',
     })
     fullName: string;
+
+    @MinLength(4, {
+        message: 'Invalid role.',
+    })
+    role: Role;
 
     // @BeforeInsert()
     // emailToLowerCase() {

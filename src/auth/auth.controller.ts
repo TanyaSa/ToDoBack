@@ -14,7 +14,8 @@ export class AuthController {
         const user = {
             email: createUserDto.email,
             passwordHash: createUserDto.password,
-            fullName: createUserDto.fullName
+            fullName: createUserDto.fullName,
+            role: createUserDto.role,
         } as UserInterface;
 
         return this.authService.sighUp(user);
@@ -22,11 +23,12 @@ export class AuthController {
 
     @Post('sign-in')
     @HttpCode(200)
-    sighIn(@Body() signinUserDto: SigninUserDto): Promise<string> {
+    sighIn(@Body() signinUserDto: SigninUserDto): Promise<{ refreshToken: string, accessToken: string }> {
         
         const userLogin = {
             email: signinUserDto.email,
             password: signinUserDto.password
+            // role: signinUserDto.role
            };
         return this.authService.signIn(userLogin);
     }
