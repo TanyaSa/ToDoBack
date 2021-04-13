@@ -7,6 +7,7 @@ import { User, UserDocument, UserWithoutPassword } from './user.schema';
 import * as bcrypt from "bcrypt";
 import { classToPlain, plainToClass } from "class-transformer";
 import { SigninUserDto } from './signin.user.dto';
+const refreshSecret = 'JWT_REFRESH_TOKEN_SECRET';
 
 @Injectable()
 export class AuthService {
@@ -49,13 +50,33 @@ export class AuthService {
         return this.userModel.findOne({ email }).exec();
     }
 
-    generateTokenPair(payload) { 
+    getById(id) {
+        return this.userModel.findById(id).exec();
+    }
+
+
+    generateTokenPair(payload) {
         const accessToken = this.jwtService.sign(payload, { expiresIn: '60s' });
         const refreshToken = this.jwtService.sign(payload, {
-            secret: ('JWT_REFRESH_TOKEN_SECRET'),
+            secret: refreshSecret,
             expiresIn: '10000s'
         })
+        this.userModel.findByIdAndUpdate(payload.id, { refreshToken }).exec();
         return { refreshToken, accessToken };
+    }
+
+    async refreshToken(refreshToken: string): Promise<{ refreshToken: string, accessToken: string }> {
+
+        const user = this.jwtService.verify(refreshToken, { secret: refreshSecret });      //verify RefreshToken
+        const userDb = await this.getById(user.id);                                       //get user by id
+        if (userDb.refreshToken == refreshToken) {  
+            const userWithoutPassword = new UserWithoutPassword(userDb.toObject());
+            const plain = classToPlain(userWithoutPassword);
+            return this.generateTokenPair(plain);                                    //generateTokenPair
+        }
+        throw new HttpException('Invalid refreshToken.', 400);
+
+
     }
 
     async signIn(signinUserDto: SigninUserDto): Promise<{ refreshToken: string, accessToken: string }> {
@@ -72,9 +93,6 @@ export class AuthService {
             const userWithoutPassword = new UserWithoutPassword(userFound.toObject());
             const plain = classToPlain(userWithoutPassword);
             const tokenPair = this.generateTokenPair(plain);
-
-            this.userModel.findByIdAndUpdate(userFound.id, { refreshToken: tokenPair.refreshToken }).exec();
-
             return tokenPair;
         } else {
             throw new HttpException('Invalid username or password.', 400);

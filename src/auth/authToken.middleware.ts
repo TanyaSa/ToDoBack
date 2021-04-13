@@ -13,9 +13,14 @@ export class AuthTokenMiddleware implements NestMiddleware {
 
     async use(req: VerifiedUserInterface, res: Response, next: NextFunction) {
         const authToken = req.headers['x-auth-token'];
-        if (authToken) {
-            req.user = await this.jwtService.verifyAsync<UserWithoutPassword>(authToken);
-        }
+        try {
+            if (authToken) {
+                req.user = await this.jwtService.verifyAsync<UserWithoutPassword>(authToken);
+            }
+        } 
+        catch(err){
+            console.log ('Error!', err);
+        };
 
         next();
     }

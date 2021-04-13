@@ -4,6 +4,7 @@ import { User } from './user.schema';
 import { UserInterface } from './user.interface';
 import { AuthService } from './auth.service';
 import { SigninUserDto } from './signin.user.dto';
+import { RefreshDto } from "./refreshToken.dto";
 
 @Controller('auth')
 export class AuthController {
@@ -32,5 +33,13 @@ export class AuthController {
            };
         return this.authService.signIn(userLogin);
     }
+
+    @Post('refresh')
+    @HttpCode(200)
+    refresh(@Body() refreshDto: RefreshDto): Promise<{ refreshToken: string, accessToken: string }> {
+     
+        return this.authService.refreshToken(refreshDto.refreshToken);
+    }
+
 
 }
