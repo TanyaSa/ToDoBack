@@ -1,10 +1,11 @@
-import { Body, Controller, Post, HttpCode } from "@nestjs/common";
+import { Body, Controller, Post, HttpCode, Req } from "@nestjs/common";
 import { CreateUserDto } from './create.user.dto';
 import { User } from './user.schema';
 import { UserInterface } from './user.interface';
 import { AuthService } from './auth.service';
 import { SigninUserDto } from './signin.user.dto';
 import { RefreshDto } from "./refreshToken.dto";
+import { VerifiedUserInterface } from "./verified-user.interface";
 
 @Controller('auth')
 export class AuthController {
@@ -37,8 +38,15 @@ export class AuthController {
     @Post('refresh')
     @HttpCode(200)
     refresh(@Body() refreshDto: RefreshDto): Promise<{ refreshToken: string, accessToken: string }> {
-     
         return this.authService.refreshToken(refreshDto.refreshToken);
+    }
+
+    @Post('sign-out')
+    @HttpCode(200)
+    signOut(@Req() request: VerifiedUserInterface): Promise<void> {
+        const token = request.headers['x-auth-token'];
+        const userDb = request.user;
+        return this.authService.signOut(userDb);
     }
 
 

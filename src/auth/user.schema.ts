@@ -24,7 +24,7 @@ export class User {
     @Prop({required: true, type: [{ type: SchemaTypes.ObjectId, ref: Item.name }]})
     items: Item[];
 
-    @Prop({required: true})
+    @Prop({required: false})
     refreshToken: String;
 }
 export const UserSchema = SchemaFactory.createForClass(User);

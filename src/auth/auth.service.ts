@@ -31,7 +31,7 @@ export class AuthService {
                 HttpStatus.CONFLICT);
         }
         const createdUser = new this.userModel(userInterface);
-        createdUser.save();
+        await createdUser.save();
         return plainToClass(UserWithoutPassword, createdUser.toObject());
     }
 
@@ -56,7 +56,7 @@ export class AuthService {
 
 
     generateTokenPair(payload) {
-        const accessToken = this.jwtService.sign(payload, { expiresIn: '60s' });
+        const accessToken = this.jwtService.sign(payload, { expiresIn: '10s' });
         const refreshToken = this.jwtService.sign(payload, {
             secret: refreshSecret,
             expiresIn: '10000s'
@@ -97,5 +97,20 @@ export class AuthService {
         } else {
             throw new HttpException('Invalid username or password.', 400);
         }
+    }
+
+    async signOut(user): Promise<void> {
+        
+        const userDb = await this.userModel.findById(user.id);
+        userDb.refreshToken = null;
+        
+        // const token = req.headers['x-auth-token'];
+        // const userDb = await this.userModel.find({passwordHash: token});
+
+        // console.log('sssssssssssssssssssss');
+        // const userDb = await this.getById(user.id);  
+
+        // userDb.refreshToken = null;
+        // userDb.passwordHash = null;
     }
 }

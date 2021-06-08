@@ -64,7 +64,9 @@ export class ItemsService {
   async updateByUserId(createDto: CreateDto, id: string, userId: string): Promise<Item> {
     const items = await this.findItemsByUserId(userId);
     if (items.find(x => x._id == id)) {
-      return this.itemModel.findByIdAndUpdate(id, createDto, { new: true });
+      const test = this.itemModel.findByIdAndUpdate(id, createDto, { new: true })
+      console.log(test);
+      return test;
     }
     throw new ForbiddenException();
   }

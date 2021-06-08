@@ -39,7 +39,7 @@ export class ItemController {
   }
 
   @Delete(':id')
-  @Roles(Role.Admin, Role.User)
+  @Roles(Role.Admin)
   deleteItem(@Param('id') id: string, @Req() request: VerifiedUserInterface): Promise<Item> {
     if (request.user.role === Role.Admin) {
       return this.itemsService.remove(id);
